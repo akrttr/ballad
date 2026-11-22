@@ -228,6 +228,15 @@
     .sched-row{grid-template-columns:1fr;gap:6px;padding:18px 0}
     .sched-time{justify-self:start}
   }
+  .sched-empty{text-align:center;padding:26px 10px}
+  .sched-empty p{color:var(--cream-dim);font-style:italic;font-size:1.08rem;margin-bottom:18px}
+  .sched-empty a{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.14em;font-size:.78rem;font-weight:500;
+    color:var(--cream);text-decoration:none;border:1px solid var(--line);border-radius:2px;padding:13px 22px;transition:all .25s;
+  }
+  .sched-empty a:hover,.sched-empty a:focus-visible{border-color:var(--brass);color:var(--brass);transform:translateY(-2px)}
+  .sched-empty a .ig-ico{font-size:1.05rem;line-height:1}
 
   /* eq bars */
   .eq{display:flex;align-items:flex-end;gap:6px;height:60px;margin:8px 0 34px}
@@ -469,26 +478,13 @@
       <p class="muted" style="max-width:38ch;font-style:italic">Haftanın belli akşamları küçük sahnemizde canlı performanslar, atölyeler ve söyleşiler oluyor. Rezervasyon şart değil ama erken gelmek iyi fikir.</p>
     </div>
 
+    <!-- Baz durum: tablo boşsa / açılmazsa bu görünür. Tabloda etkinlik varsa onunla değişir. -->
     <div class="schedule reveal" id="scheduleList">
-      <div class="sched-row">
-        <span class="sched-day">Perşembe</span>
-        <span class="sched-title">Vinyl Selektör Gecesi<small> seçilmiş caz albümleri eşliğinde</small></span>
-        <span class="sched-time">19:00</span>
-      </div>
-      <div class="sched-row">
-        <span class="sched-day">Cuma</span>
-        <span class="sched-title">Canlı Jazz Trio<small>üçlü ile bir akşam</small></span>
-        <span class="sched-time">21:00</span>
-      </div>
-      <div class="sched-row">
-        <span class="sched-day">Cumartesi</span>
-        <span class="sched-title">Açık Sahne / Jam Session<small>enstrümanını getir, sahne senin</small></span>
-        <span class="sched-time">21:00</span>
-      </div>
-      <div class="sched-row">
-        <span class="sched-day">Pazar</span>
-        <span class="sched-title">Ballad Brunch<small>uzun bir kahvaltı, uzun bir müzik</small></span>
-        <span class="sched-time">11:00</span>
+      <div class="sched-empty">
+        <p>Bu haftanın programını hazırlıyoruz.</p>
+        <a href="https://www.instagram.com/balladankara/" target="_blank" rel="noopener">
+          <span class="ig-ico" aria-hidden="true">◎</span> Güncel etkinlikler · Instagram
+        </a>
       </div>
     </div>
 
