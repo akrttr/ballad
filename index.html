@@ -643,6 +643,15 @@
 </footer>
 
 <script>
+  /* ============================================================
+     ETKİNLİK TAKVİMİ — Google Tablo bağlantısı
+     Kafe sahibinin düzenlediği Google Tablo'nun
+     "Dosya > Paylaş > Web'de yayımla > (Sekme) > CSV" linkini
+     aşağıdaki tırnakların arasına yapıştır.
+     Boş bırakılırsa sitedeki hazır (yedek) liste görünür.
+     ============================================================ */
+  var EVENTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTCikRzMjD_VUuDvG3zi3grmFIf3GFwF51EHREAY6wsxaUIWXWtWWKNNAovNn-AMRtuWWJ-AS_2e0e6/pub?gid=0&single=true&output=csv";
+
   // scroll reveal
   (function(){
     var els = document.querySelectorAll('.reveal');
@@ -675,6 +684,63 @@
     track.addEventListener('scroll', update, {passive:true});
     window.addEventListener('resize', update);
     update();
+  })();
+
+  // etkinlik takvimi — Google Tablo'dan çek (boşsa / hata olursa yedek liste kalır)
+  (function(){
+    if(!EVENTS_CSV_URL) return;
+    var box = document.getElementById('scheduleList');
+    if(!box) return;
+
+    function parseCSV(text){
+      var rows=[], row=[], field='', q=false, c, i;
+      for(i=0;i<text.length;i++){
+        c=text[i];
+        if(q){
+          if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else q=false; }
+          else field+=c;
+        } else {
+          if(c==='"') q=true;
+          else if(c===','){ row.push(field); field=''; }
+          else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+          else if(c!=='\r') field+=c;
+        }
+      }
+      if(field!==''||row.length){ row.push(field); rows.push(row); }
+      return rows;
+    }
+    function toObjects(rows){
+      if(!rows.length) return [];
+      var heads = rows[0].map(function(h){return (h||'').trim().toLowerCase();});
+      return rows.slice(1).filter(function(r){
+        return r.some(function(c){return (c||'').trim()!=='';});
+      }).map(function(r){
+        var o={}; heads.forEach(function(h,i){o[h]=(r[i]||'').trim();}); return o;
+      });
+    }
+    function pick(o){ for(var i=1;i<arguments.length;i++){ if(o[arguments[i]]) return o[arguments[i]]; } return ''; }
+    function esc(s){ return (s||'').replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]; }); }
+
+    function render(objs){
+      var out=[];
+      objs.forEach(function(o){
+        var gun  = pick(o,'gün','gun','tarih','gün/tarih','gun/tarih','gün / tarih');
+        var bas  = pick(o,'başlık','baslik','etkinlik','program','ad','isim');
+        var desc = pick(o,'açıklama','aciklama','detay','not');
+        var saat = pick(o,'saat','zaman');
+        if(!gun && !bas) return;
+        out.push('<div class="sched-row">'+
+          '<span class="sched-day">'+esc(gun)+'</span>'+
+          '<span class="sched-title">'+esc(bas)+(desc?'<small>'+esc(desc)+'</small>':'')+'</span>'+
+          '<span class="sched-time">'+esc(saat)+'</span>'+
+        '</div>');
+      });
+      if(out.length) box.innerHTML = out.join('');
+    }
+
+    fetch(EVENTS_CSV_URL).then(function(r){ if(!r.ok) throw 0; return r.text(); })
+      .then(function(t){ render(toObjects(parseCSV(t))); })
+      .catch(function(){ /* yedek liste kalır */ });
   })();
 </script>
 </body>
